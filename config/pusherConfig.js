@@ -3,7 +3,6 @@ import beamsClient from '../config/pusherConfig'; // Assurez-vous que le chemin 
 
 export default async (request, response) => {
     try {
-        const headers = new Headers(request.headers);
         const user = await getConnecterUser(request);
         if (user === undefined || user === null) {
             console.log("Not connected");
