@@ -1,40 +1,9 @@
-import { getConnecterUser, triggerNotConnected } from "../lib/session";
-import beamsClient from '../config/pusherConfig'; // Assurez-vous que le chemin d'import est correct
+const PushNotifications = require('@pusher/push-notifications-server');
 
-export default async (request, response) => {
-    try {
-        const user = await getConnecterUser(request);
-        if (user === undefined || user === null) {
-            console.log("Not connected");
-            triggerNotConnected(response);
-            return;
-        }
+const beamsClient = new PushNotifications({
+    instanceId: "5a652d06-64a5-4114-9617-213505ab80a0",
+    secretKey: "011FE802D12636A89CD615C3B68C0E8C524F592E1420DB909FB8F68E670A4CC2",
+    
+});
 
-        const message = await request.body;
-
-        // TODO : save message
-
-        // Envoi de la notification push
-        const targetUser = { externalId: message.receiverId }; // Remplacez ceci par la manière dont vous gérez les utilisateurs
-        const publishResponse = await beamsClient.publishToUsers([targetUser.externalId], {
-            web: {
-                notification: {
-                    title: user.username,
-                    body: message.content,
-                    icon: "https://www.univ-brest.fr/themes/custom/ubo_parent/favicon.ico",
-                    deep_link: "" /* lien permettant d'ouvrir directement la conversation concernée */,
-                },
-                data: {
-                    /* additional data */
-                }
-            },
-        });
-
-        console.log("Notification push envoyée : ", publishResponse);
-
-        response.send("OK");
-    } catch (error) {
-        console.log(error);
-        response.status(500).json(error);
-    }
-};
+module.exports = beamsClient;

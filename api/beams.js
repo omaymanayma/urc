@@ -1,34 +1,59 @@
-import {getConnecterUser, triggerNotConnected} from "../lib/session.js";
-import PushNotifications from "@pusher/push-notifications-server"
+import './App.css';
+import AppRouter from './principal/AppRouter';
+import { useEffect, useState } from 'react';
+import { Client as PusherClient, TokenProvider } from '@pusher/push-notifications-web';
 
+function App() {
+  const [clientStarted, setClientStarted] = useState(false);
+  const [deviceInterestAdded, setDeviceInterestAdded] = useState(false);
 
-export default async (req, res) => {
+  useEffect(() => {
+    const token = sessionStorage.getItem('token');
+    const user_id = sessionStorage.getItem('externalId');
+    if (!token || !user_id) return;
 
-   const userIDInQueryParam = req.query["user_id"];
-    const user = await getConnecterUser(req);
-    console.log("PushToken : " + userIDInQueryParam + " -> " + JSON.stringify(user) + "external user id : " + user.externalId);
-    if (user === undefined || user === null || userIDInQueryParam !== user.externalId) {
-        console.log("Not connected");
-        triggerNotConnected(res);
-        return;
-    }
-
-    console.log("Using push instance : " + "d5a652d06-64a5-4114-9617-213505ab80a0");
-    const beamsClient = new PushNotifications({
-        instanceId: "5a652d06-64a5-4114-9617-213505ab80a0",
-        secretKey: "011FE802D12636A89CD615C3B68C0E8C524F592E1420DB909FB8F68E670A4CC2",
-        
+    const beamsClient = new PusherClient({
+      instanceId: "5a652d06-64a5-4114-9617-213505ab80a0",
     });
 
-    const beamsToken = beamsClient.generateToken(user.externalId);
+    const beamsTokenProvider = new TokenProvider({
+      url: '/api/beams',
+      headers: {
+        Authentication: "Bearer " + token,
+      },
+    });
 
-    console.log(JSON.stringify(beamsToken));
-    res.send(beamsToken);
+    beamsClient.start()
+      .then(() => {
+        console.log('Beams client started');
+        setClientStarted(true);
+        return beamsClient.addDeviceInterest('global');
+      })
+      .then(() => {
+        console.log('Device interest "global" added successfully.');
+        setDeviceInterestAdded(true);
+        return beamsClient.getDeviceId();
+      })
+      .then(deviceId => {
+        console.log("Push id: " + deviceId);
+      })
+      .catch(err => {
+        console.error('Error while adding device interest:', err);
+        if (!clientStarted) {
+          setTimeout(() => {
+            beamsClient.start()
+              .then(() => beamsClient.addDeviceInterest('global'))
+              .catch(console.error);
+          }, 1000);  // Retry after 1 second
+        }
+      });
 
+    return () => {
+      beamsClient.stop().catch(console.error);
+    };
+  }, []);
+
+  return <AppRouter />;
 }
 
-
-
-
-
-
+export default App;
