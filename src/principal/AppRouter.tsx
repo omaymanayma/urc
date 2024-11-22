@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import NotFound from './NotFound';
 import {Login} from "../user/Login";
 import SignUp from '../user/SignUp';
+import Notifications from './Notifications';
 import Home from '../discussion/Home';
 import Chats from '../discussion/Chats';
 import {useDispatch} from "react-redux";
@@ -29,7 +30,8 @@ const AppRouter = () => {
 
 
   return (
-    <Router>
+<Notifications>
+<Router>
 
       <Routes>
 
@@ -45,6 +47,9 @@ const AppRouter = () => {
       </Routes>
 
     </Router>
+
+</Notifications>
+
 
   );
 

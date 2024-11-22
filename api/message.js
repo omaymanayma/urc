@@ -16,6 +16,12 @@ export default async (request, response) => {
         // TODO : save message
 
         // Envoi de la notification push
+
+        const beamsClient = new PushNotifications({
+            instanceId: process.env.PUSHER_INSTANCE_ID,
+            secretKey: process.env.PUSHER_SECRET_KEY,
+        });
+        
         const targetUser = { externalId: message.receiverId }; // Remplacez ceci par la manière dont vous gérez les utilisateurs
         const publishResponse = await beamsClient.publishToUsers([targetUser.externalId], {
             web: {
