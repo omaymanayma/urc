@@ -17,13 +17,20 @@ export default async (request, response) => {
 
         // Envoi de la notification push
 
+        const receiverQuery = await db.sql`
+        select external_id
+        from users 
+        where user_id=${receiverId}`
+
+        const receiverExternalId = receiverQuery.rows[0].external_id;
+
         const beamsClient = new PushNotifications({
             instanceId: process.env.PUSHER_INSTANCE_ID,
             secretKey: process.env.PUSHER_SECRET_KEY,
         });
-        
+
         const targetUser = { externalId: message.receiverId }; // Remplacez ceci par la manière dont vous gérez les utilisateurs
-        const publishResponse = await beamsClient.publishToUsers([targetUser.externalId], {
+        const publishResponse = await beamsClient.publishToUsers([receiverExternalId], {
             web: {
                 notification: {
                     title: user.username,
