@@ -1,4 +1,4 @@
-const PushNotifications = require('@pusher/push-notifications-server');
+import PushNotifications from '@pusher/push-notifications-server';
 
 const beamsClient = new PushNotifications({
     instanceId: "5a652d06-64a5-4114-9617-213505ab80a0",
