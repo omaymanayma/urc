@@ -6,4 +6,5 @@ const beamsClient = new PushNotifications({
     
 });
 
-module.exports = beamsClient;
+export default beamsClient;  
+
