@@ -5,7 +5,6 @@ import {Login} from "../user/Login";
 import SignUp from '../user/SignUp';
 import Notifications from './Notifications';
 import Home from '../discussion/Home';
-import Chats from '../discussion/Chats';
 import {useDispatch} from "react-redux";
 import {AppDispatch} from "../app/store";
 import {useEffect} from "react";
@@ -39,8 +38,8 @@ const AppRouter = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp/>} />
         <Route path="/home" element={<Home/>} />
-        <Route path="/home/user/:receiverName/:receiverId" element={<Chats />} />
-
+        <Route path="/messages/user/:id" element={<Home/>} />
+        <Route path="/messages/room/:id" element={<Home/>} />
         <Route path="*" element={<NotFound />} />
 
 

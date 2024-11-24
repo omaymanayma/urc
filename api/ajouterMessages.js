@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { senderId, receiverId, senderName, messageContent } = req.body;
+    const { senderId, receiverId, senderName, messageContent,receiverType } = req.body;
 
     // Vérification de la présence de toutes les informations nécessaires
     if (!senderId || !receiverId || !senderName || !messageContent) {
@@ -24,6 +24,7 @@ export default async function handler(req, res) {
       senderName: senderName,
       messageContent: messageContent,
       timestamp: timestamp,
+      receiverType:receiverType,
     };
 
     // Ajouter le nouveau message à la conversation dans Vercel KV

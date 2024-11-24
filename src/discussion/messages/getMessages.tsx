@@ -16,7 +16,7 @@ import {
   Avatar
 } from '@mui/material';
 
-const MessageList: React.FC<{ receiverId: number, receiverName: string }> = ({ receiverId, receiverName }) => {
+const MessageList: React.FC<{ receiverId: number, receiverName: string, receiverType: 'user' | 'group' | null }> = ({ receiverId, receiverName,receiverType }) => {
   const newMSGcounter = useSelector(newMSGSelector);
   const userInfos = useSelector(userInfosSelector);
   const [messageList, setMessageList] = useState<Message[]>([]);
@@ -26,8 +26,8 @@ const MessageList: React.FC<{ receiverId: number, receiverName: string }> = ({ r
 
   useEffect(() => {
     const fetchMessages = () => {
-      const messageInfosEnvoyes = { senderId: userInfos.userId, receiverId } as MessageInfos;
-      const messageInfosRecus = { senderId: receiverId, receiverId: userInfos.userId } as MessageInfos;
+      const messageInfosEnvoyes = { senderId: userInfos.userId, receiverId,receiverType } as MessageInfos;
+      const messageInfosRecus = { senderId: receiverId, receiverId: userInfos.userId, receiverType } as MessageInfos;
 
       getMessage(
         messageInfosEnvoyes,
@@ -79,6 +79,7 @@ const MessageList: React.FC<{ receiverId: number, receiverName: string }> = ({ r
       }
     }
   }, [combinedMessages]);
+  console.log("ha les mess", combinedMessages)
 
   return (
     <Paper elevation={6} sx={{ padding: 4, backgroundColor: '#f5f5f5', borderRadius: 2, boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', maxWidth: 800, margin: 'auto' }}>

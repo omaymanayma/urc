@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { userInfosSelector, setLogout } from '../features/loginSlice';
 import GetUser from './listUser';
+import GetRoom from './GroupChatList';
 import MessageList from './messages/getMessages';
 import AddMessage from './messages/ajouterMessage';
 import { CssBaseline, IconButton, Typography, Box, Drawer, List, Divider, ListItem, Paper } from '@mui/material'; // <-- Added Paper import
@@ -15,6 +16,8 @@ const Home = () => {
     const receiver = useSelector(messageReceiverSelector);
     const [receiverId, setReceiverId] = useState<number | null>(null);
     const [receiverName, setReceiverName] = useState<string>('');
+    const [receiverType, setReceiverType] = useState<'user' | 'group' | null>(null);
+
     const drawerWidth1 = 280;
 
     useEffect(() => {
@@ -26,11 +29,13 @@ const Home = () => {
         dispatch(setLogout());
     };
 
-    // Handle user click to open chat
-    const handleUserClick = (id: number, name: string) => {
-        setReceiverId(id);
-        setReceiverName(name);
-    };
+   // Mettre à jour handleUserClick pour gérer aussi le type de receiver
+const handleUserClick = (id: number, name: string, type: 'user' | 'group') => {
+    setReceiverId(id);
+    setReceiverName(name);
+    setReceiverType(type); // Nouvel état pour le type de receiver
+};
+
 
     return (
         <Box sx={{ display: 'flex', height: '100vh', backgroundColor: '#f0f0f0' }}>
@@ -62,7 +67,9 @@ const Home = () => {
                 <List>
                     <ListItem disablePadding>
                         <Box sx={{ padding: 2 }}>
-                            <GetUser onUserClick={handleUserClick} />
+                        <GetUser onUserClick={(id, name) => handleUserClick(id, name, 'user')} />
+                        <GetRoom onUserClick={(id, name) => handleUserClick(id, name, 'group')} />
+
                         </Box>
                     </ListItem>
                 </List>
@@ -107,17 +114,17 @@ const Home = () => {
                         <Box sx={{ width: '100%', maxWidth: 800 }}>
                             
                             <Paper sx={{ p: 2, marginBottom: 2, backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: 2, boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-                                <MessageList receiverId={receiverId} receiverName={receiverName} />
+                            <MessageList receiverId={receiverId} receiverName={receiverName} receiverType={receiverType} />
                             </Paper>
                             <Paper sx={{ p: 2, backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: 2, boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-                                <AddMessage receiverId={receiverId} />
+                            <AddMessage receiverId={receiverId} receiverType={receiverType} />
                             </Paper>
                         </Box>
                     ) : (
                         <Typography>Pas encore de conversation sélectionnée.</Typography>
                     )}
                 </Box>
-            </Box>
+            </Box>  
         </Box>
     );
 };

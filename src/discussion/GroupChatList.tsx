@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { userInfosSelector } from '../features/loginSlice';
-import { getAllUser } from './listUsersApi';
+import { getAllRoom } from './GroupChatListApi';
 import { CustomError } from '../model/CustomError';
-import { UserInfos } from '../model/common';
+import { RoomInfos } from '../model/common';
 import PersonPinOutlinedIcon from '@mui/icons-material/PersonPinOutlined';
 import { useNavigate } from 'react-router-dom';
 import { formatTimestamp } from '../model/common';
-import { setList } from '../features/userlistSlice';
+import { setList } from '../features/roomlistSlice'; // a revérifier
 import { AppDispatch } from '../app/store';
 import {
   Box,
@@ -25,10 +25,10 @@ interface GetUserProps {
   onUserClick: (id: number, name: string, type:string) => void; // Add this prop
 }
 
-const GetUser: React.FC<GetUserProps> = ({ onUserClick }) => {
+const GetRoom: React.FC<GetUserProps> = ({ onUserClick }) => {
   const navigate = useNavigate();
   const userInfos = useSelector(userInfosSelector);
-  const [usersList, setUsersList] = useState<UserInfos[]>([]);
+  const [roomsList, setRoomsList] = useState<RoomInfos[]>([]);
   const [error, setError] = useState({} as CustomError);
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch<AppDispatch>();
@@ -38,11 +38,11 @@ const GetUser: React.FC<GetUserProps> = ({ onUserClick }) => {
   }, [userInfos, dispatch]);
 
   useEffect(() => {
-    getAllUser(
+    getAllRoom(
       userInfos.userId,
-      (result: UserInfos[]) => {
+      (result: RoomInfos[]) => {
         setError(new CustomError(""));
-        setUsersList(result);
+        setRoomsList(result);
         dispatch(setList(result));
         setLoading(false);
       },
@@ -56,38 +56,37 @@ const GetUser: React.FC<GetUserProps> = ({ onUserClick }) => {
 
   const handleClick = (id: number, name: string) => {
     // Instead of navigate, use onUserClick from props
-    onUserClick(id, name, 'user');
-    console.log("ha id",id)
-    navigate(`/messages/user/${id}`)
+    onUserClick(id, name,'group');
+    navigate(`/messages/room/${id}`)
   };
 
   return (
     <Paper elevation={6} sx={{ padding: 4, maxWidth: 420, width: '100%', borderRadius: 2, backgroundColor: '#fff' }}>
-      <Typography variant="h6" textAlign='center' sx={{ fontWeight: 'bold', color: '#f1226a' }}>Mes Contacts</Typography>
+      <Typography variant="h6" textAlign='center' sx={{ fontWeight: 'bold', color: '#f1226a' }}>Mes Groupes</Typography>
       {loading ? (
         <CircularProgress sx={{ display: 'block', margin: 'auto' }} />
       ) : (
         <List>
-          {usersList.length > 0 ? (
-            usersList.map((user, index) => (
-              <ListItemButton key={index} onClick={() => handleClick(user.userId, user.username)} sx={{ mb: 1 }}>
+          {roomsList.length > 0 ? (
+            roomsList.map((room, index) => (
+              <ListItemButton key={index} onClick={() => handleClick(room.room_id, room.name)} sx={{ mb: 1 }}>
                 <ListItemIcon><PersonPinOutlinedIcon sx={{ color: '#000' }} /></ListItemIcon>
                 <ListItemText
                   primary={
                     <Typography variant="subtitle1" component="div" sx={{ color: '#000' }}>
-                      {user.username}
+                      {room.name}
                     </Typography>
                   }
                   secondary={
                     <Typography variant="caption" color="textSecondary">
-                      {user.last_login && formatTimestamp(user.last_login)}
+                      {room.created_on && formatTimestamp(room.created_on)}
                     </Typography>
                   }
                 />
               </ListItemButton>
             ))
           ) : (
-            <Typography variant="body2" textAlign='center' sx={{ color: '#000' }}>Aucun contact trouvé.</Typography>
+            <Typography variant="body2" textAlign='center' sx={{ color: '#000' }}>Aucun Groupe trouvé.</Typography>
           )}
         </List>
       )}
@@ -96,4 +95,4 @@ const GetUser: React.FC<GetUserProps> = ({ onUserClick }) => {
   );
 };
 
-export default GetUser;
+export default GetRoom;

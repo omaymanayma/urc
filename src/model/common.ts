@@ -45,14 +45,25 @@ export interface UserInfos {
     userId : number;
     last_login?: EpochTimeStamp;
 }
+
+export interface RoomInfos {
+    room_id: number;
+    name : string;
+    created_on?: EpochTimeStamp;
+    created_by?: string;
+}
+
 export interface Message {
     senderId: number;
     receiverId: number;
     messageContent: string;
     timestamp?: EpochTimeStamp;
     senderName: string;
+    receiverType:'user' | 'group' | null;
 }
 export interface MessageInfos {
     senderId: number;
     receiverId: number;
+    receiverType: 'user' | 'group' | null; 
+
 }

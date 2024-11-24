@@ -2,6 +2,7 @@ import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import loginReducer from '../features/loginSlice';
 import messageReducer from '../features/messageSlice';
 import userlistReducer from '../features/userlistSlice';
+import roomlistReducer from '../features/roomlistSlice';
 
 
 export const store = configureStore({
@@ -9,6 +10,7 @@ export const store = configureStore({
     login : loginReducer,
     message : messageReducer,
     userlist:userlistReducer,
+    roomlist:roomlistReducer,
   },
 });
 
