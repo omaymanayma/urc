@@ -9,8 +9,10 @@ import { CssBaseline, IconButton, Typography, Box, Drawer, List, Divider, ListIt
 import { Logout } from '@mui/icons-material';
 import { AppDispatch } from '../app/store';
 import { messageReceiverSelector } from '../features/messageSlice';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
+    const navigate=useNavigate();
     const dispatch = useDispatch<AppDispatch>();
     const userInfos = useSelector(userInfosSelector);
     const receiver = useSelector(messageReceiverSelector);
@@ -27,18 +29,20 @@ const Home = () => {
     // Fonction de déconnexion
     const handleLogout = () => {
         dispatch(setLogout());
+        sessionStorage.clear();
+        navigate("/");
+        
     };
 
-   // Mettre à jour handleUserClick pour gérer aussi le type de receiver
-const handleUserClick = (id: number, name: string, type: 'user' | 'group') => {
-    setReceiverId(id);
-    setReceiverName(name);
-    setReceiverType(type); // Nouvel état pour le type de receiver
-};
-
+    // Mettre à jour handleUserClick pour gérer aussi le type de receiver
+    const handleUserClick = (id: number, name: string, type: 'user' | 'group') => {
+        setReceiverId(id);
+        setReceiverName(name);
+        setReceiverType(type); // Nouvel état pour le type de receiver
+    };
 
     return (
-        <Box sx={{ display: 'flex', height: '100vh', backgroundColor: '#f0f0f0' }}>
+        <Box sx={{ display: 'flex', height: '100hv', backgroundColor: '#f0f0f0' }}>
             <CssBaseline />
             <Drawer
                 sx={{
@@ -60,36 +64,7 @@ const handleUserClick = (id: number, name: string, type: 'user' | 'group') => {
                     <Typography variant="h6" noWrap>
                         UBO
                     </Typography>
-                </Box>
-
-                <Divider sx={{ bgcolor: 'rgba(0,0,0,0.2)' }} />
-
-                <List>
-                    <ListItem disablePadding>
-                        <Box sx={{ padding: 2 }}>
-                        <GetUser onUserClick={(id, name) => handleUserClick(id, name, 'user')} />
-                        <GetRoom onUserClick={(id, name) => handleUserClick(id, name, 'group')} />
-
-                        </Box>
-                    </ListItem>
-                </List>
-            </Drawer>
-
-            <Box
-                component="main"
-                sx={{
-                    flexGrow: 1,
-                    p: 3,
-                    width: `calc(100% - ${drawerWidth1}px)`,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    position: 'relative',
-                    backgroundColor: '#fff', // Blanc
-                    borderRadius: '15px',
-                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                }}
-            >
-                <IconButton
+                    <IconButton
                     sx={{
                         position: 'absolute',
                         top: 16,
@@ -102,29 +77,55 @@ const handleUserClick = (id: number, name: string, type: 'user' | 'group') => {
                 >
                     <Logout />
                 </IconButton>
+                </Box>
 
-                <Typography variant="h4" sx={{ fontWeight: 'bold', marginBottom: 2, color: '#f1226a' }}>
-                    Chat entre Petrolheads
-                </Typography>
+                <Divider sx={{ bgcolor: 'rgba(0,0,0,0.2)' }} />
 
-                <Divider sx={{ my: 3, bgcolor: 'rgba(0,0,0,0.2)' }} />
+                <List>
+                    <ListItem disablePadding >
+                        <Box sx={{ display:"flex", padding: 2, flexDirection:"column", gap:3 }}>
+                            <GetUser onUserClick={(id, name) => handleUserClick(id, name, 'user')} />
+                            <GetRoom onUserClick={(id, name) => handleUserClick(id, name, 'group')} />
+                        </Box>
+                    </ListItem>
+                </List>
+            </Drawer>
 
-                <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Box
+                component="main"
+                style={{height:"100vh"}}
+                sx={{
+                    width: `calc(100% - ${drawerWidth1}px)`,
+                    maxHeight:'100%',
+                    minHeight:"100%",
+                    height:"100%",
+                    display: 'flex',
+                    flexDirection: 'column',
+                    position: 'relative',
+                    backgroundColor: '#fff',
+                    borderRadius: '15px',
+                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                    overflow: 'hidden',  // Empêche le débordement du conteneur principal
+                }}
+            >
+                
+
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', overflowY: 'auto'}} style={{height:"100vh"}} >
                     {receiverId ? (
-                        <Box sx={{ width: '100%', maxWidth: 800 }}>
-                            
+                        <Box sx={{ width: '100%', maxWidth: 800  }}>
                             <Paper sx={{ p: 2, marginBottom: 2, backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: 2, boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-                            <MessageList receiverId={receiverId} receiverName={receiverName} receiverType={receiverType} />
+                                <MessageList receiverId={receiverId} receiverName={receiverName} receiverType={receiverType} />
+                                <AddMessage receiverId={receiverId} receiverType={receiverType} />
                             </Paper>
-                            <Paper sx={{ p: 2, backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: 2, boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-                            <AddMessage receiverId={receiverId} receiverType={receiverType} />
-                            </Paper>
+                              
                         </Box>
                     ) : (
                         <Typography>Pas encore de conversation sélectionnée.</Typography>
                     )}
                 </Box>
-            </Box>  
+
+
+            </Box>
         </Box>
     );
 };

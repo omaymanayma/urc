@@ -60,6 +60,7 @@ export interface Message {
     timestamp?: EpochTimeStamp;
     senderName: string;
     receiverType:'user' | 'group' | null;
+    imageUrl?:string;
 }
 export interface MessageInfos {
     senderId: number;

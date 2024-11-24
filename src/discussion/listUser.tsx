@@ -7,8 +7,8 @@ import { UserInfos } from '../model/common';
 import PersonPinOutlinedIcon from '@mui/icons-material/PersonPinOutlined';
 import { useNavigate } from 'react-router-dom';
 import { formatTimestamp } from '../model/common';
-import { setList } from '../features/userlistSlice';
-import { AppDispatch } from '../app/store';
+import { fetFilteredUsers, setList } from '../features/userlistSlice';
+import { AppDispatch, RootState } from '../app/store';
 import {
   Box,
   List,
@@ -28,6 +28,10 @@ interface GetUserProps {
 const GetUser: React.FC<GetUserProps> = ({ onUserClick }) => {
   const navigate = useNavigate();
   const userInfos = useSelector(userInfosSelector);
+
+  // const filterUsers = useSelector((state: { user: RootState }) =>
+  //   fetFilteredUsers(state, sessionStorage.getItem("id") || "-1")
+  // );
   const [usersList, setUsersList] = useState<UserInfos[]>([]);
   const [error, setError] = useState({} as CustomError);
   const [loading, setLoading] = useState(true);
@@ -52,6 +56,8 @@ const GetUser: React.FC<GetUserProps> = ({ onUserClick }) => {
         setLoading(false);
       }
     ); 
+    
+    
   }, [navigate, userInfos, dispatch]);
 
   const handleClick = (id: number, name: string) => {
@@ -61,6 +67,10 @@ const GetUser: React.FC<GetUserProps> = ({ onUserClick }) => {
     navigate(`/messages/user/${id}`)
   };
 
+  const filteredUsers =  usersList.filter(user => user.userId !== parseInt(sessionStorage.getItem("id") || "-1"));
+  
+
+
   return (
     <Paper elevation={6} sx={{ padding: 4, maxWidth: 420, width: '100%', borderRadius: 2, backgroundColor: '#fff' }}>
       <Typography variant="h6" textAlign='center' sx={{ fontWeight: 'bold', color: '#f1226a' }}>Mes Contacts</Typography>
@@ -68,8 +78,8 @@ const GetUser: React.FC<GetUserProps> = ({ onUserClick }) => {
         <CircularProgress sx={{ display: 'block', margin: 'auto' }} />
       ) : (
         <List>
-          {usersList.length > 0 ? (
-            usersList.map((user, index) => (
+          {filteredUsers.length > 0 ? (
+            filteredUsers.map((user, index) => (
               <ListItemButton key={index} onClick={() => handleClick(user.userId, user.username)} sx={{ mb: 1 }}>
                 <ListItemIcon><PersonPinOutlinedIcon sx={{ color: '#000' }} /></ListItemIcon>
                 <ListItemText

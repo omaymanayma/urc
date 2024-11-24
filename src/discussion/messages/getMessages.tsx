@@ -16,7 +16,7 @@ import {
   Avatar
 } from '@mui/material';
 
-const MessageList: React.FC<{ receiverId: number, receiverName: string, receiverType: 'user' | 'group' | null }> = ({ receiverId, receiverName,receiverType }) => {
+const MessageList: React.FC<{ receiverId: number, receiverName: string, receiverType: 'user' | 'group' | null }> = ({ receiverId, receiverName, receiverType }) => {
   const newMSGcounter = useSelector(newMSGSelector);
   const userInfos = useSelector(userInfosSelector);
   const [messageList, setMessageList] = useState<Message[]>([]);
@@ -26,7 +26,7 @@ const MessageList: React.FC<{ receiverId: number, receiverName: string, receiver
 
   useEffect(() => {
     const fetchMessages = () => {
-      const messageInfosEnvoyes = { senderId: userInfos.userId, receiverId,receiverType } as MessageInfos;
+      const messageInfosEnvoyes = { senderId: userInfos.userId, receiverId, receiverType } as MessageInfos;
       const messageInfosRecus = { senderId: receiverId, receiverId: userInfos.userId, receiverType } as MessageInfos;
 
       getMessage(
@@ -79,7 +79,6 @@ const MessageList: React.FC<{ receiverId: number, receiverName: string, receiver
       }
     }
   }, [combinedMessages]);
-  console.log("ha les mess", combinedMessages)
 
   return (
     <Paper elevation={6} sx={{ padding: 4, backgroundColor: '#f5f5f5', borderRadius: 2, boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', maxWidth: 800, margin: 'auto' }}>
@@ -102,7 +101,9 @@ const MessageList: React.FC<{ receiverId: number, receiverName: string, receiver
                 <Avatar sx={{ bgcolor: message.senderId === userInfos.userId ? '#000' : '#f1226a', marginRight: message.senderId === userInfos.userId ? 0 : 2, marginLeft: message.senderId === userInfos.userId ? 2 : 0 }}>
                   {message.senderName.charAt(0).toUpperCase()}
                 </Avatar>
-                <Box sx={{
+                <Box
+                style={{height:"100%"}}
+                 sx={{
                   display: 'inline-block',
                   maxWidth: '75%',
                   backgroundColor: message.senderId === userInfos.userId ? '#e0e0e0' : '#f1226a',
@@ -115,6 +116,24 @@ const MessageList: React.FC<{ receiverId: number, receiverName: string, receiver
                     {message.senderName}
                   </Typography>
                   <Typography variant="body1">{message.messageContent}</Typography>
+
+                  {/* Vérification de l'image dans le message */}
+                  {message.imageUrl && message.imageUrl !== '' && (
+                    <Box sx={{ mt: 2 }} style={{height:"100%"}}>
+                      <img
+                        src={message.imageUrl}
+                        alt="Message impo a lire"
+                        style={{
+                          maxWidth: '100%',
+                          maxHeight: '200px',
+                          objectFit: 'contain',
+                          borderRadius: '8px',
+                          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                        }}
+                      />
+                    </Box>
+                  )}
+
                   {message.timestamp && (
                     <Typography variant="caption" sx={{ display: 'block', textAlign: 'right', color: 'rgba(255, 255, 255, 0.6)' }}>
                       {formatTimestamp(message.timestamp)}
